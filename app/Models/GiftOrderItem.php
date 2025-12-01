@@ -19,6 +19,6 @@ class GiftOrderItem extends Model
 
     public function catalog()
     {
-        return $this->belongsTo(GiftCatalogs::class, 'gift_catalog_id');
+        return $this->belongsTo(GiftCatalog::class, 'gift_catalog_id');
     }
 }
