@@ -11,9 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gift_items', function (Blueprint $table) {
+        Schema::create('gift_order_items', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+
+            $table->integer('quantity');
+
+            $table->foreignId('gift_catalog_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('gift_order_id')->constrained()->cascadeOnDelete();
+
+            $table->timestampsTz();
         });
     }
 
@@ -22,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gift_items');
+        Schema::dropIfExists('gift_order_items');
     }
 };

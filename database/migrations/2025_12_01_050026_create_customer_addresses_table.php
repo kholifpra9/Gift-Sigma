@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('customer_addresses', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
+            $table->text('location');
+            $table->timestampsTz();
         });
     }
 
