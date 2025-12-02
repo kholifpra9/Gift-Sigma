@@ -22,12 +22,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/gift-orders/create', [GiftOrderController::class, 'create'])->name('gift-orders.create');
     Route::post('/gift-orders', [GiftOrderController::class, 'store'])->name('gift-orders.store');
-    
+
     Route::get('/gift-orders', [GiftOrderController::class, 'index'])->name('gift-orders.index');
 
     Route::get('/gift-orders/{id}', [GiftOrderController::class, 'show'])->name('gift-orders.show');
-
-    
 });
 
 require __DIR__.'/auth.php';

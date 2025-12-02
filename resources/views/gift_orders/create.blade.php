@@ -86,10 +86,14 @@
                                         <select
                                             :name="`items[${index}][gift_catalog_id]`"
                                             x-model="item.gift_catalog_id"
+                                            @change="if(item.gift_catalog_id === 'add_new'){ openModal() }"
                                             required
                                             class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
                                         >
                                             <option value="">-- Pilih Catalog --</option>
+                                            <option value="add_new">
+                                                + Tambahkan Catalog Baru
+                                            </option>
                                             @foreach($giftCatalogs as $gc)
                                                 <option value="{{ $gc->id }}"
                                                     x-bind:value="{{ $gc->id }}">
@@ -131,7 +135,7 @@
                                             @click="removeItem(index)"
                                             class="text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded-md text-sm">
                                         Hapus
-                                    </button>    
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -158,8 +162,63 @@
         </div>
     </div>
 
+    <div
+        x-data
+        x-show="$store.modalCatalog.open"
+        x-cloak
+        class="fixed inset-0 flex items-center justify-center bg-black/40 z-50"
+    >
+        <div class="bg-white w-full max-w-md rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Tambahkan Catalog Baru</h3>
+
+            <form method="POST" action="{{ route('gift-catalogs.store') }}">
+                @csrf
+
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Nama Catalog</label>
+                    <input type="text" name="name" required
+                        class="mt-1 w-full rounded border-gray-300 px-3 py-2">
+                </div>
+
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Link (opsional)</label>
+                    <input type="url" name="link"
+                        placeholder="https://example.com"
+                        class="mt-1 w-full rounded border-gray-300 px-3 py-2">
+                </div>
+
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Platform</label>
+                    <input type="text" name="platform" required
+                        placeholder="Shopee, Tokopedia, Instagram..."
+                        class="mt-1 w-full rounded border-gray-300 px-3 py-2">
+                </div>
+
+                <div class="flex justify-end mt-4 gap-2">
+                    <button type="button"
+                            @click="$store.modalCatalog.close()"
+                            class="px-3 py-2 border rounded">
+                        Batal
+                    </button>
+
+                    <button type="submit"
+                            class="px-4 py-2 rounded bg-sky-600 text-white">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{-- Alpine.js component --}}
     <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('modalCatalog', {
+                open: false,
+                open() { this.open = true },
+                close() { this.open = false }
+            })
+        });
         function giftOrderForm() {
             return {
                 // init with old inputs if present
@@ -198,8 +257,16 @@
                         // keep one blank row to avoid empty POST
                         this.addItem();
                     }
+                },
+                openModal() {
+                    Alpine.store('modalCatalog').open();
+                    // Reset kembali dropdown agar tidak tersangkut di value add_new
+                    this.items.forEach(i => {
+                        if (i.gift_catalog_id === 'add_new') i.gift_catalog_id = '';
+                    });
                 }
             }
-        }
+        };
     </script>
+
 </x-app-layout>
