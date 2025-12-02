@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GiftCatalogController;
 use App\Http\Controllers\GiftOrderController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CustomerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,7 +29,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/gift-orders/{id}', [GiftOrderController::class, 'show'])->name('gift-orders.show');
     Route::resource('gift-catalogs', GiftCatalogController::class);
-    Route::post('/gift-catalogs', [\App\Http\Controllers\GiftCatalogController::class, 'store'])->name('gift-catalogs.store');
+    Route::post('/gift-catalogs', [GiftCatalogController::class, 'store'])->name('gift-catalogs.store');
+    Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+
 });
 
 require __DIR__.'/auth.php';

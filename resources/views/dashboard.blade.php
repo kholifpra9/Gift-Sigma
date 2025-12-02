@@ -31,7 +31,7 @@
 
                 {{-- Total Item Diberikan --}}
                 <div class="p-6 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl shadow border border-indigo-200">
-                    <p class="text-sm text-indigo-700 dark:text-indigo-300">Total Items Sent</p>
+                    <p class="text-sm text-indigo-700 dark:text-indigo-300">Total Items Ordered</p>
                     <h2 class="text-3xl font-bold text-indigo-800 dark:text-indigo-200 mt-1">{{ $totalItems }}</h2>
                 </div>
 

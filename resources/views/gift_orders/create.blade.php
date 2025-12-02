@@ -31,13 +31,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700">Pilih Customer</label>
-                        <select name="customer_id" required
+                        <select name="customer_id"
+                                x-model="customer_id"
+                                @change="if (customer_id === '__new') openModalCustomer()"
                                 class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-1 focus:ring-sky-500 focus:border-sky-500">
                             <option value="">-- Pilih Customer --</option>
+                            <option value="__new">+ Tambahkan Customer Baru</option>
                             @foreach($customers as $c)
                                 <option value="{{ $c->id }}"
-                                    {{ old('customer_id') == $c->id ? 'selected' : '' }}>
-                                    {{ $c->name }}
+                                    {{ old('customer_id') == $c->id ? 'selected' : '' }}
+                                    {{-- {{ $c->name }} --}}
+                                    x-bind:value="{{ $c->id }}">
+                                    {{ $c->name }} — {{ $c->city }}
                                 </option>
                             @endforeach
                         </select>
@@ -164,7 +169,7 @@
 
     <div
         x-data
-        x-show="$store.modalCatalog.open"
+        x-show="$store.modalCatalog.isOpen"
         x-cloak
         class="fixed inset-0 flex items-center justify-center bg-black/40 z-50"
     >
@@ -196,8 +201,8 @@
 
                 <div class="flex justify-end mt-4 gap-2">
                     <button type="button"
-                            @click="$store.modalCatalog.close()"
-                            class="px-3 py-2 border rounded">
+                        @click="$store.modalCatalog.closeModal()"
+                        class="px-3 py-2 border rounded">
                         Batal
                     </button>
 
@@ -210,18 +215,121 @@
         </div>
     </div>
 
+    <div
+        x-data
+        x-show="$store.modalCustomer.isOpen"
+        x-cloak
+        class="fixed inset-0 flex items-center justify-center bg-black/40 z-50"
+    >
+        <div class="bg-white w-full max-w-md rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Tambahkan Customer Baru</h3>
+
+            <form method="POST" action="{{ route('customers.store') }}" x-data>
+                @csrf
+
+                <!-- Name -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Nama</label>
+                    <input
+                        type="text"
+                        name="name"
+                        required
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500"
+                    >
+                </div>
+
+                <!-- Phone -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Nomor Telepon</label>
+                    <input
+                        type="text"
+                        name="phone"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500"
+                    >
+                </div>
+
+                <!-- Province -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Address</label>
+                    <input
+                        type="text"
+                        name="address"
+                        required
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500"
+                    >
+                </div>
+
+                <!-- Province -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">City</label>
+                    <input
+                        type="text"
+                        name="city"
+                        required
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500"
+                    >
+                </div>
+
+                <!-- Province -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Provinsi</label>
+                    <input
+                        type="text"
+                        name="province"
+                        required
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500"
+                    >
+                </div>
+
+                <!-- Postal Code -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Kode Pos</label>
+                    <input
+                        type="text"
+                        name="postal_code"
+                        required
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500"
+                    >
+                </div>
+
+                <div class="flex justify-end gap-2 mt-6">
+                    <button
+                        type="button"
+                        @click="$store.modalCustomer.closeModal()"
+                        class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md"
+                    >
+                        Batal
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-md"
+                    >
+                        Simpan Customer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{-- Alpine.js component --}}
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('modalCatalog', {
-                open: false,
-                open() { this.open = true },
-                close() { this.open = false }
+                isOpen: false,
+                openModal() { this.isOpen = true },
+                closeModal() { this.isOpen = false }
+            }),
+            Alpine.store('modalCustomer', {
+                isOpen: false,
+                openModal() { this.isOpen = true },
+                closeModal() { this.isOpen = false }
             })
         });
         function giftOrderForm() {
             return {
                 // init with old inputs if present
+                customer_id: '',
                 items: (() => {
                     // Try to hydrate from server-rendered old() via JSON encoded variable
                     try {
@@ -259,11 +367,16 @@
                     }
                 },
                 openModal() {
-                    Alpine.store('modalCatalog').open();
+                    Alpine.store('modalCatalog').openModal();
                     // Reset kembali dropdown agar tidak tersangkut di value add_new
                     this.items.forEach(i => {
                         if (i.gift_catalog_id === 'add_new') i.gift_catalog_id = '';
                     });
+                },
+                openModalCustomer() {
+                    Alpine.store('modalCustomer').openModal();
+                    // Reset kembali dropdown agar tidak tersangkut di value add_new
+                    this.customer_id = '';
                 }
             }
         };

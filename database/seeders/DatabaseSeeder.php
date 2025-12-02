@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             GiftCatalogSeeder::class,
             GiftOrderSeeder::class,
             GiftOrderItemSeeder::class,
+            UpdateCustomerFieldsSeeder::class
         ]);
     }
 }
