@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/gift-orders', [GiftOrderController::class, 'index'])->name('gift-orders.index');
 
     Route::get('/gift-orders/{id}', [GiftOrderController::class, 'show'])->name('gift-orders.show');
+    Route::resource('gift-catalogs', GiftCatalogController::class);
+    Route::post('/gift-catalogs', [\App\Http\Controllers\GiftCatalogController::class, 'store'])->name('gift-catalogs.store');
 });
 
 require __DIR__.'/auth.php';
