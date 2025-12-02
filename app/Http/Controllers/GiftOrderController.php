@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\CustomerService;
 use App\Models\GiftCatalog;
+use App\Models\GiftOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -57,6 +58,27 @@ class GiftOrderController extends Controller
             Log::error('Gift order create failed: '.$e->getMessage());
             return back()->withErrors(['err' => 'Terjadi kesalahan saat menyimpan order.'])->withInput();
         }
+    }
+
+    public function index()
+    {
+        $orders = GiftOrder::with([
+            'customer',
+            'customerService',
+        ])->latest()->paginate(10);
+
+        return view('gift_orders.index', compact('orders'));
+    }
+
+    public function show($id)
+    {
+        $order = GiftOrder::with([
+            'customer',
+            'customerService',
+            'items.catalog'
+        ])->findOrFail($id);
+
+        return view('gift_orders.show', compact('order'));
     }
 
 }

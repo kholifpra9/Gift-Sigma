@@ -44,18 +44,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700">Customer Service</label>
-                        {{-- Jika ingin otomatis pakai authenticated user, bisa set hidden --}}
-                        <select name="customer_service_id" required
-                                class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:ring-1 focus:ring-sky-500 focus:border-sky-500">
-                            <option value="">-- Pilih CS --</option>
-                            @foreach($customerServices as $cs)
-                                <option value="{{ $cs->id }}"
-                                    {{ old('customer_service_id', auth()->user()->id ?? '') == $cs->id ? 'selected' : '' }}>
-                                    {{ $cs->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <input type="hidden"
+                            value="{{ auth()->user()->name }}"
+                            class="mt-1 block w-full rounded-md border-gray-200 bg-gray-50 px-3 py-2 shadow-sm"
+                            disabled>
+
+                        {{-- Hidden input untuk ID customer_service --}}
+                        <input type="hidden" name="customer_service_id" value="{{ auth()->user()->customerService->id ?? '' }}">
                     </div>
                 </div>
 
@@ -136,9 +131,7 @@
                                             @click="removeItem(index)"
                                             class="text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded-md text-sm">
                                         Hapus
-                                    </button>
-
-                                    <span class="text-xs text-slate-400">#@{{ index + 1 }}</span>
+                                    </button>    
                                 </div>
                             </div>
                         </div>
