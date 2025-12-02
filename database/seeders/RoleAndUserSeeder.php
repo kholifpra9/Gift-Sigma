@@ -7,29 +7,30 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
-class UserSeeder extends Seeder
+class RoleAndUserSeeder extends Seeder
 {
     public function run(): void
     {
-        // ----------------------------
-        // Customer Service User
-        // ----------------------------
+        // --- Create Roles ---
+        $roles = ['cs', 'finance'];
+        foreach ($roles as $role) {
+            Role::firstOrCreate(['name' => $role]);
+        }
+
+        // --- Create Users ---
         $cs = User::firstOrCreate(
             ['email' => 'cs@example.com'],
             [
-                'name' => 'Customer Service',
+                'name' => 'Customer Service 1',
                 'password' => Hash::make('password'),
             ]
         );
-        $cs->assignRole('customer_service');
+        $cs->assignRole('cs');
 
-        // ----------------------------
-        // Finance User
-        // ----------------------------
         $finance = User::firstOrCreate(
             ['email' => 'finance@example.com'],
             [
-                'name' => 'Finance User',
+                'name' => 'Finance Admin',
                 'password' => Hash::make('password'),
             ]
         );
